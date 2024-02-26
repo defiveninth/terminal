@@ -6,24 +6,26 @@ import cups
 app = Flask(__name__)
 
 def get_printer_list():
-    conn = cups.Connection()
-    printers = conn.getPrinters()
-    return printers
-
+    try:
+        conn = cups.Connection()
+        printers = conn.getPrinters()
+        return {"status": "success", "printers": list(printers.keys())}
+    except cups.IPPError as e:
+        return {"status": "error", "message": f"Failed to retrieve printers: {e}"}
 
 def get_usb_devices():
     devices = usb.core.find(find_all=True)
     device_list = []
     for device in devices:
         device_info = {
-            "Device name:": os.listdir(f"/Volumes")[1],
-            "Files:": get_flash_drive_path(device.idVendor),
+            "deviceName": device.product,
+            "files": get_flash_drive_path(device.idVendor)
         }
         device_list.append(device_info)
-    if device_list:
-        return jsonify({"status":"success","message":"Flash list successfully finded", "USBList":files})
+    if len(device_list) > 0:
+        return {"status": "success", "devices": device_list}
     else:
-        return jsonify({"status":"error","message":"Flash not find"})
+        return {"status": "error", "message": f"Failed to retrieve USB devices"}
 
 def get_flash_drive_path(idVendor):
     vendor_id = hex(idVendor)
@@ -43,8 +45,7 @@ def index():
 
 @app.route("/devices")
 def devices():
-    devices = get_usb_devices()
-    return jsonify(devices)
+    return jsonify(get_usb_devices())
 
 @app.route("/printers")
 def printers():
