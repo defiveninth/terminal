@@ -1,0 +1,27 @@
+.navStyle {
+	@apply container mx-auto flex flex-wrap;
+	gap: 3%;
+	row-gap: 40px;
+}
+.navItem {
+	width: 48%;
+	height: 300px;
+	font-size: 48px;
+	@apply rounded-2xl flex items-center justify-center text-center
+}
+.navItem:nth-child(1){
+	background: linear-gradient(180deg, hsla(305, 100%, 50%, 1) 0%, hsla(0, 0%, 100%, 1) 100%);
+	border: 1px solid hsla(305, 100%, 50%, 1);
+}
+.navItem:nth-child(2){
+	background: linear-gradient(180deg, hsla(223, 100%, 50%, 1) 0%, hsla(0, 0%, 100%, 1) 100%);
+	border: 1px solid hsla(223, 100%, 50%, 1);
+}
+.navItem:nth-child(3){
+	background: linear-gradient(180deg, hsla(137, 100%, 50%, 1) 0%, hsla(0, 0%, 100%, 1) 100%);
+	border: 1px solid hsla(137, 100%, 50%, 1);
+}.navItem:nth-child(4){
+	background: linear-gradient(180deg, hsla(0, 100%, 50%, 1) 0%, hsla(0, 0%, 100%, 1) 100%);
+	border: 1px solid #FF0000;
+}
+

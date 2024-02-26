@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: Avenka;
+    src: url("/AvenirNext.otf") format("opentype");
+}
+body{
+	font-family: Avenka;
+}

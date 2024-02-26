@@ -1,0 +1,13 @@
+.title {
+	font-size: 48px;
+}
+.titleBlue {
+	color: #00a3ff;
+}
+.headerContainer {
+	@apply container mx-auto flex justify-between items-center;
+}
+.homeBtn {
+	@apply px-6 py-2 text-white rounded-md;
+	background: #00b2ff;
+}

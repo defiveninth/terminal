@@ -1,16 +1,15 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import About from './About'
-import './App.css'
-import Error from './Error'
-import Home from './Home'
+import Error from './pages/Error/Error'
+import Home from './pages/Home/Home'
+import './global.css'
 
 export default function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
 				<Route>
-          <Route path='/' element={<Home />} />
-					<Route path='/about' element={<About />} />
+					<Route path='/' element={<Home />} />
+					<Route path='/home' element={<Home />} />
 					<Route path='/*' element={<Error />} />
 				</Route>
 			</Routes>
