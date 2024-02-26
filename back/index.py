@@ -1,42 +1,39 @@
 from flask import Flask
 import usb.core
+import os
 
 app = Flask(__name__)
-
-
-def get_memory(idVendorKey):
-    listUSB = []
-    dev = usb.core.find(idVendor=idVendorKey)
-
-    if dev is None:
-        return "Device not found"
-
-    interface = 0
-    endpoint = dev[0][(0, 0)][0]
-
-    try:
-        data = dev.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize)
-        return data
-    except usb.core.USBError as e:
-        return ("Ошибка чтения данных:", e)
 
 
 def get_usb_devices():
     devices = usb.core.find(find_all=True)
     device_list = []
-    if len(device_list)>0:
-        for device in devices:
-            device_list.append({
-                "Device vendor: ": hex(device.idVendor),
-                "Files: ":get_memory(hex(device.idVendor))
-                })
-        return device_list
-    else:
-        return "Devices not found"
+    for device in devices:
+        device_info = {
+            "Device vendor:": hex(device.idVendor),
+            "Path:": get_flash_drive_path(device.idVendor)
+        }
+        device_list.append(device_info)
+    return device_list
 
+def get_flash_drive_path(idVendor):
+    vendor_id = hex(idVendor)
+
+    usb_mount_path = "/System/"
+
+    for root, dirs, files in os.walk(usb_mount_path):
+        for directory in dirs:
+            if directory.startswith(vendor_id):
+                return os.path.join(root, directory)
+
+    return "Flash drive path not found"
 
 @app.route("/")
 def index():
+    return "Main page"
+
+@app.route("/devices")
+def devices():
     devices = get_usb_devices()
     return str(devices)
 
