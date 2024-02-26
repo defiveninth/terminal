@@ -1,13 +1,13 @@
 'use client'
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
 import Header from '../components/Header/Header'
 
 import styles from './Home.module.css'
 import '../../global.css'
 
-function Home() {
+const Home = () => {
 	const navigate = useNavigate()
 	return (
 		<>
