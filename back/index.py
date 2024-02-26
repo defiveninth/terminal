@@ -2,9 +2,12 @@ from flask import Flask, jsonify
 import usb.core
 import os
 import cups
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
+global indexUSB
+indexUSB = 0
 def get_printer_list():
     try:
         conn = cups.Connection()
@@ -16,10 +19,11 @@ def get_printer_list():
 def get_usb_devices():
     devices = usb.core.find(find_all=True)
     device_list = []
-    for device in devices:
+    volume_dirs = os.listdir(f"/Volumes/")[indexUSB]
+    if volume_dirs != "Macintosh HD":
         device_info = {
-            "deviceName": device.product,
-            "files": get_flash_drive_path(device.idVendor)
+            "deviceName": volume_dirs,
+            "files": get_flash_drive_path(volume_dirs)
         }
         device_list.append(device_info)
     if len(device_list) > 0:
@@ -27,14 +31,9 @@ def get_usb_devices():
     else:
         return {"status": "error", "message": f"Failed to retrieve USB devices"}
 
-def get_flash_drive_path(idVendor):
-    vendor_id = hex(idVendor)
-
-    if os.listdir(f"/System"):
-        files = []
-        for i in os.listdir(f"/Volumes/{os.listdir(f"/Volumes")[1]}"):
-            if i.endswith(".docx"):
-                files.append(i)
+def get_flash_drive_path(volume_dir):
+    if os.path.isdir(f"/Volumes/{volume_dir}/DCIM/100CANON"):
+        files = os.listdir(f"/Volumes/{volume_dir}/DCIM/100CANON")
         return files
     else:
         return []

@@ -1,64 +1,64 @@
-'use client'
-
 import axios from "axios"
-import { useState } from "react"
-import { Usb, File } from 'lucide-react';
-
+import { File, Usb } from 'lucide-react'
+import { useEffect, useState } from "react"
 import Header from "../components/Header/Header"
-
 import styles from './page.module.css'
 
- let reqOptions = {
-  url: "https://localhost:5000",
-  method: "GET",
-  headers: {
-    "Accept": "*/*",
-    "User-Agent": "Thunder Client (https://www.thunderclient.com)"
-   }
- }
+const PrintPage = () => {
+  const [devices, setDevices] = useState([]);
+  const [error, setError] = useState(false);
 
-const PrintPage = async () => {
-  const [error, setError] = useState<Boolean>(false)
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:5000/devices");
+      if(response.data.status === "error") setError(true);
+      else {
+        setError(false);
+        setDevices(response.data.devices);
+      }
+    } catch (e) {
+      setError(true);
+    }
+  };
 
-  try {
-    let response = await axios.request(reqOptions)
-  } catch (e) {
-    setError(true)
-  }
+  useEffect(() => {
+    fetchData();
+  }, [devices]);
 
   return (
     <>
-        <Header />
-        <div className={ styles.cont }>
-          {
-            error ? (
-              <>
-                <h1>Birdenke durus emes, qaita koriniz</h1>
-                <button></button>
-              </>
-            ) : (
-              <>
-                {
-                  response.data.devices.map(D => (<>
-                    <div key={D.deviceName}>
-                      <Usb />
-                      <p>{ D.deviceName }</p>
-                      <div>files: </div>
-                        {
-                          response.data.devices.files.map(F => <div key={ F }>
-                            <File />
-                            <p>{ F }</p>
-                          </div>)
-                        }
-                    </div>
-                  </>))
-                }
-              </>
-            )
-          }
-        </div>
+      <Header />
+      <div className={styles.cont}>
+        {error ? (
+          <div className='flex justify-center flex-col items-center h-screen'>
+          <h1>Birdenke durus emes, qaita koriniz</h1>
+          <button className='p-2 bg-red-600 text-white rounded' onClick={fetchData}>Reload</button>
+          </div>
+        ) : (
+          <>
+            {devices.map(device => (
+              <div key={device.deviceName}>
+                <div className="flex gap-2 items-center justify-left mb-5 text-3xl">
+                  <Usb />
+                  <p>{device.deviceName}</p>
+                </div>
+                
+                <div>Files: </div>
+                <div className="flex flex-wrap gap-5">
+                {device.files.map((file, index) => (
+                  <div key={index} className={styles.fileContainer}>
+                    <File />
+                    <p>{file}</p>
+                  </div>
+                ))}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default PrintPage
+export default PrintPage;
