@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom"
 
 import Header from '../components/Header/Header'
 
-import styles from './Home.module.css'
 import '../../global.css'
+import styles from './Home.module.css'
 
 const Home = () => {
 	const navigate = useNavigate()
 	return (
-		<>
+		<div className='flex flex-col mt-20'>
 			<Header />
 			<nav className={styles.navStyle}>
 				<div className={styles.navItem} onClick={ () => navigate('/print') }>
@@ -26,7 +26,7 @@ const Home = () => {
 					<span className='navItemText'>JARNAMA ORNALASTÝRU</span>
 				</div>
 			</nav>
-		</>
+		</div>
 	)
 }
 

@@ -3,7 +3,7 @@ import usb.core
 import os
 import cups
 from flask_cors import CORS
-from functions import get_usb_devices, get_flash_drive_path, get_printer_list, get_folder_with_path
+from functions import get_usb_devices, get_flash_drive_path, get_printer_list, get_folder_with_path, get_folder_with_path_back
 
 app = Flask(__name__)
 CORS(app)
@@ -18,14 +18,17 @@ def index():
 def devices():
     return jsonify(get_usb_devices())
 
-@app.route("/devices/folder/", methods=['get'])
-def devicesGoFolder():
-    folderName = request.args.get('folderName')
+@app.route("/devices/folder/<folderName>", methods=['get'])
+def devicesGoFolder(folderName):
     return jsonify(get_folder_with_path(folderName))
+
+@app.route("/devices/back", methods=['get'])
+def devicesGoBackFolder():
+    return jsonify(get_folder_with_path_back())
 
 @app.route("/printers")
 def printers():
     return jsonify(get_printer_list())
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=1234, debug=True)

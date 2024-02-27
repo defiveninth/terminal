@@ -1,75 +1,139 @@
-import axios from "axios"
-import { File, Usb } from 'lucide-react'
-import { useEffect, useState } from "react"
-import Header from "../components/Header/Header"
-import styles from './page.module.css'
+import axios from 'axios'
+import { File, Folder, Usb } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import Header from '../components/Header/Header'
 
 const PrintPage = () => {
-  const [devices, setDevices] = useState([]);
-  const [error, setError] = useState(false);
+	const [data, setData] = useState([])
+	const [error, setError] = useState(false)
+	const [fetch, setFetch] = useState({
+		folders: '',
+		type: 'devices',
+	})
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://127.0.0.1:5000/devices");
-      if(response.data.status === "error") setError(true);
-      else {
-        setError(false);
-        setDevices(response.data.devices);
-      }
-    } catch (e) {
-      setError(true);
-    }
-  };
+	const fetchData = async () => {
+		try {
+			const res = await axios.get('http://127.0.0.1:1234/devices')
+			if (res.data.status === 'error') setError(true)
+			else {
+				setError(false)
+				setData(res.data)
+			}
+		} catch (e) {
+			setError(true)
+		}
+	}
 
-  useEffect(() => {
-    setInterval(() => {
-    fetchData();
-    }, 3000);
-  }, []);
+	const fetchBack = async () => {
+		try {
+			const res = await axios.get('http://127.0.0.1:1234/devices/back')
+			if (res.data.status === 'error') {
+				setError(true)
+			} else {
+				setError(false)
+				setData({ ...res.data, path: res.data.path })
+				if (res.data.path === '/Volumes') {
+					setFetch({ ...fetch, type: 'devices' })
+				}
+			}
+		} catch (e) {
+			setError(true)
+		}
+	}
 
-  return (
-    <>
-      <Header />
-      <div className={styles.cont}>
-        {error ? (
-          <div className='flex justify-center flex-col items-center h-screen'>
-          <h1>Birdenke durus emes, qaita koriniz</h1>
-          <button className='p-2 bg-red-600 text-white rounded' onClick={fetchData}>Reload</button>
-          </div>
-        ) : (
-          <>
-            {devices.map(device => (
-              <div key={device.deviceName}>
-                <div className="flex gap-2 items-center justify-left mb-5 text-3xl">
-                  <Usb />
-                  <p>{device.deviceName}</p>
-                </div>
-                
-                <div>Files: </div>
-                <div className="flex flex-wrap gap-5">
-                {device.Path.files.map((file, index) => (
-                  <div key={index} className={styles.fileContainer}>
-                    <File />
-                    <p>{file}</p>
-                  </div>
-                ))}
-                </div>
-                <div className='mt-5'>Folders: </div>
-                <div className="flex flex-wrap gap-5">
-                {device.Path.folders.map((file, index) => (
-                  <div key={index} className={styles.fileContainer}>
-                    <File />
-                    <p>{file}</p>
-                  </div>
-                ))}
-                </div>
-              </div>
-            ))}
-          </>
-        )}
-      </div>
+	const setPath = async (type, folderName) => {
+		setFetch(prev => ({ ...prev, type: type, folders: folderName }))
+		if (type === 'folders') {
+			try {
+				const res = await axios.get(
+					`http://127.0.0.1:1234/devices/folder${
+						folderName.startsWith('/') ? '' : '/'
+					}${folderName}`
+				)
+				if (res.data.status === 'error') setError(true)
+				else {
+					setError(false)
+					setData(res.data)
+				}
+			} catch (e) {
+				setError(true)
+			}
+		}
+	}
+
+	useEffect(() => {
+		fetchData()
+	}, [])
+
+	if (error) {
+		return <>
+			<Header />
+      <div className='container mx-auto flex items-center justify-center flex-col'>
+				<h1 className='text-2xl text-cyan-950'>USB QÙRYLGUSY TABYLMADY</h1>
+				<button className='text-2xl px-4 py-2 bg-red-500 text-white rounded-md' onClick={()=>fetchData()}>JANARTU</button>
+			</div>
     </>
-  );
-};
+	}
 
-export default PrintPage;
+	return (
+		<>
+			<Header />
+			<div className='container mx-auto'>
+				<h1 className='text-2xl text-cyan-950'>USB QÙRYLGYLARY:</h1>
+			</div>
+			<div className='container mx-auto flex flex-wrap gap-4 p-5'>
+				{data.type === 'devices' && data.devices.length > 0 && data.devices.map(D => (
+						<div
+							key={D}
+							className={
+								'flex flex-col items-center gap-2 border-2 border-cyan-950 w-40 p-2 rounded-lg '
+							}
+							onClick={() => setPath('folders', `/${D}`)}
+						>
+							<Usb />
+							<span>{D}</span>
+						</div>
+					))}
+				{fetch.type !== 'devices' && (
+					<>
+						<button
+							className='px-5 py-2 text-center border-2 border-cyan-950 w-40 p-2 rounded-lg text-xl'
+							onClick={() => fetchBack()}
+						>
+							. /
+						</button>
+					</>
+				)}
+				{data.type === 'folders' &&
+					data.folders.length > 0 &&
+					data.folders.map(F => (
+						<>
+							<div
+								key={F}
+								className='flex flex-col items-center gap-2 border-2 border-cyan-950 w-40 p-2 rounded-lg'
+								onClick={() => setPath('folders', `/${F}`)}
+							>
+								<Folder />
+								<span>{F}</span>
+							</div>
+						</>
+					))}
+				{data.type === 'folders' &&
+					data.files.length > 0 &&
+					data.files.map(F => (
+						<>
+							<div
+								key={F}
+								className='flex flex-col items-center gap-2 border-2 border-cyan-950 w-40 p-2 rounded-lg'
+							>
+								<File />
+								<span>{F}</span>
+							</div>
+						</>
+					))}
+			</div>
+		</>
+	)
+}
+
+export default PrintPage
