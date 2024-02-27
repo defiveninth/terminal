@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify,request
 import usb.core
 import os
 import cups
@@ -18,8 +18,9 @@ def index():
 def devices():
     return jsonify(get_usb_devices())
 
-@app.route("/devices/folder/<folderName>", methods=['get'])
-def devicesGoFolder(folderName):
+@app.route("/devices/folder/", methods=['get'])
+def devicesGoFolder():
+    folderName = request.args.get('folderName')
     return jsonify(get_folder_with_path(folderName))
 
 @app.route("/printers")
