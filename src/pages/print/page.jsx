@@ -22,8 +22,10 @@ const PrintPage = () => {
   };
 
   useEffect(() => {
+    setInterval(() => {
     fetchData();
-  }, [devices]);
+    }, 3000);
+  }, []);
 
   return (
     <>
@@ -45,7 +47,16 @@ const PrintPage = () => {
                 
                 <div>Files: </div>
                 <div className="flex flex-wrap gap-5">
-                {device.files.map((file, index) => (
+                {device.Path.files.map((file, index) => (
+                  <div key={index} className={styles.fileContainer}>
+                    <File />
+                    <p>{file}</p>
+                  </div>
+                ))}
+                </div>
+                <div className='mt-5'>Folders: </div>
+                <div className="flex flex-wrap gap-5">
+                {device.Path.folders.map((file, index) => (
                   <div key={index} className={styles.fileContainer}>
                     <File />
                     <p>{file}</p>
