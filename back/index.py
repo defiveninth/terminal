@@ -3,7 +3,7 @@ import usb.core
 import os
 import cups
 from flask_cors import CORS
-from functions import get_usb_devices, get_flash_drive_path, get_printer_list
+from functions import get_usb_devices, get_flash_drive_path, get_printer_list, get_folder_with_path
 
 app = Flask(__name__)
 CORS(app)

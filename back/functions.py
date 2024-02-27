@@ -49,20 +49,18 @@ def get_flash_drive_path(current_Path):
         return {"error": str(e)}
 
 def get_folder_with_path(folderName):
-    currentPath+=folderName+"/"
+    сurrentPath = os.path.join(currentPath, folderName)
     try:
-        devices = usb.core.find(find_all=True)
-        device_list = []
-        for volume_dir in os.listdir("/Volumes/"):
-            if volume_dir != "Macintosh HD":
-                device_info = {
-                    "deviceName": volume_dir,
-                    "Path": get_flash_drive_path(currentPath)
-                }
-                device_list.append(device_info)
-        if len(device_list) > 0:
-            return {"status": "success", "devices": device_list, "path":currentPath}
-        else:
-            return {"status": "error", "message": "No USB devices found"}
+        files = []
+        folders = []
+        for item in os.listdir(сurrentPath):
+            item_path = os.path.join(сurrentPath, item)
+            if os.path.isfile(item_path):
+                if not item.startswith('.'):
+                    files.append(item)
+            elif os.path.isdir(item_path):
+                if not item.startswith('.'):
+                    folders.append(item)
+        return {"status": "success", "files": files, "folders": folders, "path": new_path}
     except Exception as e:
-        return {"status": "error", "message": f"Failed to retrieve USB devices: {e}"}
+        return {"status": "error", "message": f"Failed to retrieve contents: {e}"}
