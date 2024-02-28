@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebSocket Echo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+<script>
+    const socket = io('ws://keepintouch-back.vercel.app/socket');  // Connect to the WebSocket server
+
+    socket.on('connect', function () {
+        console.log('WebSocket connected');
+        socket.send('Hello, server!');  // Send a message to the server
+        socket.send('Hello, server!');  // Send a message to the server
+        socket.send('Hello, server!');  // Send a message to the server
+    });
+
+    socket.on('message', function (message) {
+        console.log('Message from server:', message);  // Log the message received from the server
+    });
+</script>
+</head>
+<body>
+    <!-- Your HTML content here -->
+</body>
+</html>

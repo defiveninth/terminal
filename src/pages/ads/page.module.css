@@ -1,0 +1,32 @@
+.wrapper{
+	@apply container mx-auto mt-20 h-screen;
+	overflow-y: hidden;
+}
+.adsForm{
+	@apply flex flex-col mx-auto gap-5 justify-center;
+	width: 75%;
+	max-height: 100%;
+	margin-top: 10%;
+}
+.formInput{
+	width: 100%;
+	height: 50px;
+	background: rgb(200, 200, 200);
+	@apply rounded-md px-4 text-xl text-black
+}
+.formBtn{
+	width: 100%;
+	height: 50px;
+	background: #00B2FF;
+	@apply rounded-md text-white text-xl uppercase
+}
+.formInput::selection{
+	background: #00B2FF;
+	color: white;
+}
+.formInput::placeholder{
+	color: rgb(47, 47, 47);
+}
+.titleForm{
+	@apply text-left text-3xl mb-8
+}

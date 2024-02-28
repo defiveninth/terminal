@@ -1,0 +1,52 @@
+.closeModal {
+	background-color: black;
+	color: white;
+	position: fixed;
+	padding: 5px;
+	bottom: 15px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 9999; /* Ensure it's above other content */
+	@apply px-3 rounded-sm;
+}
+
+.modalContent {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+}
+
+.pdfContainer {
+	width: 100%;
+	max-width: 800px; /* Adjust as needed */
+	height: calc(100vh - 100px); /* Subtracting the height of other elements */
+	overflow-y: auto;
+	border: 1px solid black; /* Enable vertical scrolling */
+	background: #fff;
+  }
+.pdfWrapper {
+	height: 100%; /* Set a fixed height */
+	overflow-y: auto; /* Enable vertical scrolling */
+	padding:  0 calc(100%/8);
+}
+.button {
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 10px 20px;
+	margin: 5px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: #0056b3;
+}
+.icon {
+	font-size: 20px;
+	margin-right: 5px;
+}
+.btnList{
+	@apply flex gap-5
+}

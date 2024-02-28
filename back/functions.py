@@ -1,11 +1,17 @@
 import os
 import cups
 import usb.core
-
+import shutil
+from flask import send_file
+global latestOpen
 global currentPath
-currentPath = ""
 global osDir
+global openFile
+currentPath = ""
 osDir = "Macintosh HD"
+openFile = ""
+latestOpen = ""
+
 
 def get_printer_list():
     try:
@@ -15,6 +21,7 @@ def get_printer_list():
     except cups.IPPError as e:
         return {"status": "error", "message": f"Failed to retrieve printers: {e}"}
 
+
 def get_usb_devices():
     global currentPath
     try:
@@ -22,14 +29,20 @@ def get_usb_devices():
         device_list = []
         currentPath = f"/Volumes/"
         for volume_dir in os.listdir("/Volumes/"):
-            if not volume_dir.startswith('Macintosh HD'):
+            if not volume_dir.startswith("Macintosh HD"):
                 device_list.append(volume_dir)
         if len(device_list) > 0:
-            return {"status": "success", "devices": device_list, "path": currentPath, "type":"devices"}
+            return {
+                "status": "success",
+                "devices": device_list,
+                "path": currentPath,
+                "type": "devices",
+            }
         else:
             return {"status": "error", "message": "No USB devices found"}
     except Exception as e:
         return {"status": "error", "message": f"Failed to retrieve USB devices: {e}"}
+
 
 def get_usb_device_folders():
     global currentPath
@@ -45,7 +58,12 @@ def get_usb_device_folders():
                 }
                 device_list.append(device_info)
         if len(device_list) > 0:
-            return {"status": "success", "devices": device_list, "path": currentPath, "type":"folder"}
+            return {
+                "status": "success",
+                "devices": device_list,
+                "path": currentPath,
+                "type": "folder",
+            }
         else:
             return {"status": "error", "message": "No USB devices found"}
     except Exception as e:
@@ -71,10 +89,10 @@ def get_flash_drive_path(current_Path):
 
 def get_folder_with_path(folderName):
     global currentPath
-    if currentPath.endswith(folderName+"/"):
+    if currentPath.endswith(folderName + "/"):
         pass
     else:
-        currentPath = os.path.join(currentPath, folderName+"/")
+        currentPath = os.path.join(currentPath, folderName + "/")
     try:
         files = []
         folders = []
@@ -91,15 +109,16 @@ def get_folder_with_path(folderName):
             "files": files,
             "folders": folders,
             "path": currentPath,
-            "type":"folders"
+            "type": "folders",
         }
     except Exception as e:
         return {"status": "error", "message": f"Failed to retrieve contents: {e}"}
 
+
 def get_folder_with_path_back():
     global currentPath
-    parts = currentPath.split('/')  #  Split the URL by '/'
-    currentPath = '/'.join(parts[:-1])
+    parts = currentPath.split("/")  #  Split the URL by '/'
+    currentPath = "/".join(parts[:-1])
     try:
         files = []
         folders = []
@@ -117,7 +136,46 @@ def get_folder_with_path_back():
             "files": files,
             "folders": folders,
             "path": currentPath,
-            "type":"folders"
+            "type": "folders",
         }
     except Exception as e:
         return {"status": "error", "message": f"Failed to retrieve contents: {e}"}
+def copy_file(source_file):
+    try:
+        global currentPath
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        source_path = os.path.join(currentPath, source_file)
+        destination_path = os.path.join(script_dir, source_file)
+        shutil.copy(source_path, destination_path)
+        
+        print({"status": "success", "message": "File copied successfully."})
+    except Exception as e:
+        print({"status": "error", "message": f"Failed to copy file: {e}"})
+
+def get_document_url(documentName):
+    global openFile
+    global latestOpen
+    global currentPath
+    
+    # Remove the previous file if it exists
+    if os.path.exists(latestOpen):
+        os.remove(latestOpen)
+    
+    # Set the path to the new file
+    openFile = os.path.join(currentPath, documentName)
+    
+    # Copy the file if it doesn't exist
+    if not os.path.exists(openFile):
+        copy_file(documentName)
+        latestOpen = f"./{documentName}"
+    
+    return {
+        "status": "success",
+        "filename": documentName,
+        "filePath": openFile,
+        "path": currentPath,
+        "type": "folders",
+    }
+
+def get_file():
+    return send_file(openFile, as_attachment=False)
